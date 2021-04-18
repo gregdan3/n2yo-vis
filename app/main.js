@@ -25,4 +25,4 @@ async function wait_for_json(main) {
 
 function main() {}
 
-wait_for_json(main);
+// wait_for_json(main);
