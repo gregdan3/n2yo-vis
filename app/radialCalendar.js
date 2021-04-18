@@ -49,8 +49,22 @@ var numDaysInMonth = [
   31,
 ];
 
+Date.prototype.getDOY = function () {
+  var dayCount = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+  var mn = this.getMonth();
+  var dn = this.getDate();
+  var dayOfYear = dayCount[mn] + dn;
+  if (mn > 1 && this.isLeapYear()) dayOfYear++;
+  return dayOfYear;
+};
 
-function foo => {"month, day": "01 Mon"
+function n2yoDatetoDate(n2yoDate) {
+  return new Date(n2yoDate);
+}
+
+function makeCalDate(date) {
+  return `${date.getDate()} ${days[date.getDay()]}`;
+}
 
 // Build Day Numbers
 function padDates(n) {
@@ -113,8 +127,6 @@ xAxis = (g) =>
           .append("text")
           .attr("transform", (d) =>
             (x(d.State) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) <
-            Math.PI
-              ? "rotate(90)translate(0,16)"
               : "rotate(-90)translate(0,-9)"
           )
           .text((d) => d.State)
