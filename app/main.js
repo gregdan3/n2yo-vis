@@ -7,6 +7,8 @@ async function load_json(callback) {
       if (s !== null) {
         s["Launch date"] = n2yoDatetoDate(s["Launch date"]);
         s["Decay date"] = n2yoDatetoDate(s["Decay date"]);
+        s.Apogee = parseFloat(s.Apogee.replace(/,| km/gi, ""));
+        s.Perigee = parseFloat(s.Perigee.replace(/,| km/gi, ""));
         satdata.push(s);
       }
     });
@@ -30,7 +32,11 @@ async function wait_for_json(to_call) {
 }
 
 function main() {
+  var year = 2021;
+  console.log(year);
   console.log(satdata);
+
+  render_graph(year, satdata);
 }
 
 wait_for_json(main);

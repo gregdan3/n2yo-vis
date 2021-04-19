@@ -24,13 +24,10 @@ const actual_width = 1900;
 const width = actual_width - margin.left - margin.right;
 const actual_height = 1900;
 const height = actual_height - margin.top - margin.bottom;
+
 // Might delete later
-const cx = actual_width / 2;
-const cy = actual_width / 2;
 const outerRadius = Math.min(width, height) / 2;
 const innerRadius = outerRadius / 3;
-
-var year = 2021;
 
 // Build Day Numbers
 function padDate(n) {
@@ -74,11 +71,11 @@ function generateXScale(year) {
 function generateYScale(data) {
   return d3
     .scaleRadial()
-    .domain([0, d3.max(data, (d) => d.apogee)])
+    .domain([0, d3.max(data, (d) => d.Apogee)])
     .range([innerRadius, outerRadius]);
 }
 
-function generateYAxis() {
+function generateYAxis(y) {
   return (g) =>
     g.attr("text-anchor", "middle").call((g) =>
       g
@@ -101,7 +98,7 @@ function generateYAxis() {
             .attr("dx", "-1em")
             .attr("stroke", "#fff")
             .attr("stroke-width", 5)
-            .text(y.tickFormat(5, "s"))
+            .text(y.tickFormat(8, "s"))
             .clone(true)
             .attr("fill", "#000")
             .attr("stroke", "none")
@@ -109,7 +106,7 @@ function generateYAxis() {
     );
 }
 
-function generateXAxis(year) {
+function generateXAxis(x, year) {
   // This creates the state names in the example.
   // We will use this to create the day labels
   return (g) =>
@@ -144,7 +141,7 @@ function generateXAxis(year) {
 
 // TODO: shift line slightly left so it's in between months
 // Fix text orientation issues
-function generateMonthAxis(year) {
+function generateMonthAxis(x, year) {
   return (g) =>
     g.attr("text-anchor", "left").call((g) =>
       g
@@ -177,14 +174,47 @@ function generateMonthAxis(year) {
     );
 }
 
-// var arc = d3
-//   .arc()
-//   .innerRadius((d) => y(d[0]))
-//   .outerRadius((d) => y(d[1]))
-//   .startAngle((d) => x(d.data["Launch date"]))
-//   .endAngle((d) => x(d.data["Launch date"]) + x.bandwidth())
-//   .padAngle(0.01)
-//   .padRadius(innerRadius);
+function plotSatellites(x, y, data, year) {
+  return (g) =>
+    g.call((g) =>
+      g
+        .selectAll("g")
+        .data(data.filter((d) => d["Launch date"].getFullYear() == year))
+        .join("g")
+        .attr(
+          "transform",
+          (d) => `
+          rotate(${
+            ((x(d["Launch date"]) + x.bandwidth() / 2) * 180) / Math.PI - 90
+          })
+        `
+        )
+        .call(
+          (g) =>
+            g
+              .append("circle")
+              .attr("r", 5)
+              .attr("fill", "blue")
+              // .attr("cx", (d) => x(d["Launch date"]))
+              .attr("cx", (d) => y(d.Apogee))
+              .attr("cy", (d) => 0)
+              .append("svg:title")
+              .text((d) => `(${d["Apogee"]}, ${d["Launch date"]})`)
+
+          // .attr("transform", (d) => `translate(-${y(d.Apogee)},0}`)
+        )
+    );
+}
+
+// TODO: Make this show up correctly
+function renderGlobe() {
+  d3.xml("earth.svg").then((data) => {
+    d3.select("g")
+      .node()
+      .append(data.documentElement)
+      .attr("viewBox", `0 0 ${innerRadius * 2} ${innerRadius * 2}`);
+  });
+}
 
 var svg = d3
   .select("body")
@@ -194,8 +224,13 @@ var svg = d3
   .append("g")
   .attr("transform", `translate(${actual_width / 2},${actual_height / 2})`);
 
-var x = generateXScale(year);
-var y = generateXScale(satdata);
-svg.append("g").call(generateXAxis(year));
-svg.append("g").call(generateYAxis());
-svg.append("g").call(generateMonthAxis(year));
+function render_graph(year, data) {
+  data = data.filter((d) => d["Launch date"].getFullYear() == year);
+  var x = generateXScale(year);
+  var y = generateYScale(data);
+  svg.append("g").call(generateXAxis(x, year));
+  svg.append("g").call(generateYAxis(y));
+  svg.append("g").call(generateMonthAxis(x, year));
+  svg.append("g").call(plotSatellites(x, y, data, year));
+  // renderGlobe();
+}
