@@ -29,6 +29,8 @@ const height = actual_height - margin.top - margin.bottom;
 const outerRadius = Math.min(width, height) / 2;
 const innerRadius = outerRadius / 3;
 
+var year = 2020;
+
 // Build Day Numbers
 function padDate(n) {
   return n < 10 ? "0" + n : n;
@@ -179,7 +181,7 @@ function plotSatellites(x, y, data, year) {
     g.call((g) =>
       g
         .selectAll("g")
-        .data(data.filter((d) => d["Launch date"].getFullYear() == year))
+        .data(data)
         .join("g")
         .attr(
           "transform",
@@ -199,7 +201,7 @@ function plotSatellites(x, y, data, year) {
               .attr("cx", (d) => y(d.Apogee))
               .attr("cy", (d) => 0)
               .append("svg:title")
-              .text((d) => `(${d["Apogee"]}, ${d["Launch date"]})`)
+              .text((d) => JSON.stringify(d, null, 4)) // `(${d["Apogee"]}, ${d["Launch date"]})`)
 
           // .attr("transform", (d) => `translate(-${y(d.Apogee)},0}`)
         )
@@ -208,12 +210,13 @@ function plotSatellites(x, y, data, year) {
 
 // TODO: Make this show up correctly
 function renderGlobe() {
-  d3.xml("earth.svg").then((data) => {
-    d3.select("g")
-      .node()
-      .append(data.documentElement)
-      .attr("viewBox", `0 0 ${innerRadius * 2} ${innerRadius * 2}`);
-  });
+  d3.select("g")
+    .append("image")
+    .attr("xlink:href", "http://localhost/earth.svg")
+    .attr("viewBox", `0 0 ${innerRadius * 2} ${innerRadius * 2}`)
+    .attr("transform", `translate(-${innerRadius}, -${innerRadius})`)
+    .attr("width", `${innerRadius * 2}`)
+    .attr("height", `${innerRadius * 2}`);
 }
 
 var svg = d3
@@ -225,12 +228,22 @@ var svg = d3
   .attr("transform", `translate(${actual_width / 2},${actual_height / 2})`);
 
 function render_graph(year, data) {
-  data = data.filter((d) => d["Launch date"].getFullYear() == year);
+  unrender_graph();
+  data = data[year];
+  data = data ? data : [];
   var x = generateXScale(year);
   var y = generateYScale(data);
   svg.append("g").call(generateXAxis(x, year));
   svg.append("g").call(generateYAxis(y));
   svg.append("g").call(generateMonthAxis(x, year));
   svg.append("g").call(plotSatellites(x, y, data, year));
-  // renderGlobe();
+}
+
+function unrender_graph() {
+  d3.select("svg g").selectAll("g").remove();
+}
+
+function init_render(year, data) {
+  renderGlobe();
+  render_graph(year, data);
 }
