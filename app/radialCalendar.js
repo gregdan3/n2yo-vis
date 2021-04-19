@@ -49,6 +49,11 @@ var numDaysInMonth = [
   31,
 ];
 
+// Build Day Numbers
+function padDate(n) {
+  return n < 10 ? "0" + n : n;
+}
+
 Date.prototype.getDOY = function () {
   var dayCount = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
   var mn = this.getMonth();
@@ -63,13 +68,28 @@ function n2yoDatetoDate(n2yoDate) {
 }
 
 function makeCalDate(date) {
-  return `${date.getDate()} ${days[date.getDay()]}`;
+  return `${padDate(date.getDate())} ${days[date.getDay()]}`;
 }
 
-// Build Day Numbers
-function padDates(n) {
-  return n < 10 ? "0" + n : n;
+function getDatesOfYear(year) {
+  var end = new Date(year + 1, 0, 1);
+  var daysOfYear = [];
+  for (var d = new Date(year, 0, 1); d < end; d.setDate(d.getDate() + 1)) {
+    daysOfYear.push(new Date(d));
+  }
+  return daysOfYear;
 }
+
+var x = d3
+  .scaleBand()
+  .domain(getDatesOfYear(year))
+  .range([0, 2 * Math.PI])
+  .align(0);
+
+var y = d3
+  .scaleRadial()
+  .domain([0, d3.max(data, (d) => d.apogee)])
+  .range([innerRadius, outerRadius]);
 
 var svg = d3
   .select("body")
@@ -78,37 +98,37 @@ var svg = d3
   .attr("height", actual_height)
   .append("g");
 
-// yAxis = (g) =>
-//   g.attr("text-anchor", "middle").call((g) =>
-//     g
-//       .selectAll("g")
-//       .data(y.ticks(5).slice(1))
-//       .join("g")
-//       .attr("fill", "none")
-//       .call((g) =>
-//         g
-//           .append("circle")
-//           .attr("stroke", "#000")
-//           .attr("stroke-opacity", 0.5)
-//           .attr("r", y)
-//       )
-//       .call((g) =>
-//         g
-//           .append("text")
-//           .attr("y", (d) => -y(d))
-//           .attr("dy", "0.35em")
-//           .attr("stroke", "#fff")
-//           .attr("stroke-width", 5)
-//           .text(y.tickFormat(5, "s"))
-//           .clone(true)
-//           .attr("fill", "#000")
-//           .attr("stroke", "none")
-//       )
-//   );
+var yAxis = (g) =>
+  g.attr("text-anchor", "middle").call((g) =>
+    g
+      .selectAll("g")
+      .data(y.ticks(5).slice(1))
+      .join("g")
+      .attr("fill", "none")
+      .call((g) =>
+        g
+          .append("circle")
+          .attr("stroke", "#000")
+          .attr("stroke-opacity", 0.5)
+          .attr("r", y)
+      )
+      .call((g) =>
+        g
+          .append("text")
+          .attr("y", (d) => -y(d))
+          .attr("dy", "0.35em")
+          .attr("stroke", "#fff")
+          .attr("stroke-width", 5)
+          .text(y.tickFormat(5, "s"))
+          .clone(true)
+          .attr("fill", "#000")
+          .attr("stroke", "none")
+      )
+  );
 
 // This creates the state names in the example.
 // We will use this to create the day labels
-xAxis = (g) =>
+var xAxis = (g) =>
   g.attr("text-anchor", "middle").call((g) =>
     g
       .selectAll("g")
@@ -117,8 +137,10 @@ xAxis = (g) =>
       .attr(
         "transform",
         (d) => `
-          rotate(${((x(d.State) + x.bandwidth() / 2) * 180) / Math.PI - 90})
-          translate(${innerRadius},0)
+          rotate(${
+            ((x(d["Launch date"]) + x.bandwidth() / 2) * 180) / Math.PI - 90
+          })
+          translate(${outerRadius},0)
         `
       )
       .call((g) => g.append("line").attr("x2", -5).attr("stroke", "#000"))
@@ -126,27 +148,24 @@ xAxis = (g) =>
         g
           .append("text")
           .attr("transform", (d) =>
-            (x(d.State) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) <
+            (x(d["Launch date"]) + x.bandwidth() / 2 + Math.PI / 2) %
+              (2 * Math.PI) <
+            Math.PI
+              ? "rotate(90)translate(0,16)"
               : "rotate(-90)translate(0,-9)"
           )
           .text((d) => d.State)
       )
   );
 
-function getDaysArray(year) {
-  var index, i, l, daysArray;
-  daysArray = [];
-
-  for (var m = 0; m < 12; m++) {
-    index = daysIndex[new Date(year, m, 1).toString().split(" ")[0]];
-    for (i = 0, l = numDaysInMonth[m]; i < l; i++) {
-      daysArray.push(padDates(i + 1) + " " + daysInWeek[index++]);
-      if (index == 7) index = 0;
-    }
-  }
-  return daysArray;
-}
-
+var arc = d3
+  .arc()
+  .innerRadius((d) => y(d[0]))
+  .outerRadius((d) => y(d[1]))
+  .startAngle((d) => x(d.data["Launch date"]))
+  .endAngle((d) => x(d.data["Launch date"]) + x.bandwidth())
+  .padAngle(0.01)
+  .padRadius(innerRadius);
 
 // var arc = d3
 //   .arc()
