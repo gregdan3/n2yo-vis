@@ -7,8 +7,8 @@ async function load_json(callback) {
       if (s !== null) {
         s["Launch date"] = n2yoDatetoDate(s["Launch date"]);
         s["Decay date"] = n2yoDatetoDate(s["Decay date"]);
+        satdata.push(s);
       }
-      satdata.push(s);
     });
   });
   callback();
