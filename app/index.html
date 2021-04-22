@@ -13,6 +13,11 @@
     <h3>gregdan3@uab.edu</h3>
     <h3>jmfrees@uab.edu</h3>
 
+    <div id='control_panel' name='control_panel'>
+    <label for="slider">Year:</label>
+    <input type="range" id="slider" min="1957" max="2021" value="2020" step="1" oninput="change_slider(this.value)" onmouseup=slider_mouseup_render() />
+    </div>
+    <button onclick="render_graph(getElementById('slider').value - 1, satdata)">?</button>
     <table>
         <tr>
             <td>

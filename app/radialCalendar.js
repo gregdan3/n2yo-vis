@@ -1,3 +1,4 @@
+const transitionDuration = 750;
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const months = [
   "January",
@@ -29,8 +30,6 @@ const height = actual_height - margin.top - margin.bottom;
 const outerRadius = Math.min(width, height) / 2;
 const innerRadius = outerRadius / 3;
 
-var year = 2020;
-
 // Build Day Numbers
 function padDate(n) {
   return n < 10 ? "0" + n : n;
@@ -59,6 +58,7 @@ function getDatesOfYear(year) {
   for (var d = new Date(year, 0, 1); d < end; d.setDate(d.getDate() + 1)) {
     daysOfYear.push(new Date(d));
   }
+  console.log("dates generated");
   return daysOfYear;
 }
 
@@ -78,134 +78,119 @@ function generateYScale(data) {
 }
 
 function generateYAxis(y) {
-  return (g) =>
-    g.attr("text-anchor", "middle").call((g) =>
-      g
-        .selectAll("g")
-        .data(y.ticks(5).slice(1))
-        .join("g")
-        .attr("fill", "none")
-        .call((g) =>
-          g
-            .append("circle")
-            .attr("stroke", "#000")
-            .attr("stroke-opacity", 0.5)
-            .attr("r", y)
-        )
-        .call((g) =>
-          g
-            .append("text")
-            .attr("y", (d) => -y(d))
-            .attr("dy", "1em")
-            .attr("dx", "-1em")
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 5)
-            .text(y.tickFormat(8, "s"))
-            .clone(true)
-            .attr("fill", "#000")
-            .attr("stroke", "none")
-        )
-    );
+  const yAxis = d3
+    .select(".globalgroup")
+    .append("g")
+    .attr("text-anchor", "middle")
+    .selectAll("g.y-axis")
+    .data(y.ticks(5).slice(1));
+  const g = yAxis.enter().append("g").merge(yAxis).attr("class", "y-axis");
+  g.attr("fill", "none")
+    .append("circle")
+    .attr("stroke", "#000")
+    .attr("stroke-opacity", 0.5)
+    .attr("r", y);
+  g.append("text")
+    .attr("y", (d) => -y(d))
+    .attr("dy", "1em")
+    .attr("dx", "-1em")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 5)
+    .text(y.tickFormat(8, "s"))
+    .clone(true)
+    .attr("fill", "#000")
+    .attr("stroke", "none");
 }
 
 function generateXAxis(x, year) {
   // This creates the state names in the example.
   // We will use this to create the day labels
-  return (g) =>
-    g.attr("text-anchor", "left").call((g) =>
-      g
-        .selectAll("g")
-        .data(getDatesOfYear(year))
-        .join("g")
-        .attr(
-          "transform",
-          (d) => `
+  const xAxis = d3
+    .select(".globalgroup")
+    .append("g")
+    .attr("text-anchor", "left")
+    .selectAll("g.x-axis")
+    .data(getDatesOfYear(year));
+  xAxis
+    .enter()
+    .append("g")
+    .merge(xAxis)
+    .attr("class", "x-axis")
+    .attr(
+      "transform",
+      (d) => `
             rotate(${((x(d) + x.bandwidth() / 2) * 180) / Math.PI - 90})
             translate(${outerRadius},0)
             `
-        )
-        .call((g) => g.append("line").attr("x2", 5).attr("stroke", "#000"))
-        .call((g) =>
-          g
-            .append("text")
-            .attr("transform", "translate(8,5)")
-            // .attr("transform", (d) => {
-            //   let position =
-            //     (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI);
-            //   return position < Math.PI / 2 || position > (3 * Math.PI) / 2
-            //     ? "translate(80,5) scale(-1,-1)"
-            //     : "translate(8,-5)";
-            // })
-            .text((d) => makeCalDate(d))
-        )
-    );
+    )
+    .append("text")
+    .attr("transform", "translate(8,5)")
+    .text((d) => makeCalDate(d))
+    .append("line")
+    .attr("x2", 5)
+    .attr("stroke", "#000");
 }
 
 // TODO: shift line slightly left so it's in between months
 // Fix text orientation issues
 function generateMonthAxis(x, year) {
-  return (g) =>
-    g.attr("text-anchor", "left").call((g) =>
-      g
-        .selectAll("g")
-        .data(getDatesOfYear(year).filter((d) => d.getDate() === 1))
-        .join("g")
-        .attr(
-          "transform",
-          (d) => `
+  const monthAxis = d3
+    .select(".globalgroup")
+    .selectAll("g.month-axis")
+    .data(getDatesOfYear(year).filter((d) => d.getDate() === 1));
+  monthAxis
+    .enter()
+    .append("g")
+    .merge(monthAxis)
+    .attr("class", "month-axis")
+    .attr(
+      "transform",
+      (d) => `
           rotate(${((x(d) + x.bandwidth() / 2) * 180) / Math.PI - 90})
           translate(${outerRadius},0)
         `
-        )
-        .call((g) =>
-          g
-            .append("line")
-            .attr("x2", -(outerRadius - innerRadius))
-            .attr("stroke", "#000")
-        )
-        .call((g) =>
-          g
-            .append("text")
-            .attr("transform", (d) =>
-              (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
-                ? "rotate(90)translate(3,19)"
-                : "rotate(-90)translate(3,-12)"
-            )
-            .text((d) => months[d.getMonth()])
-        )
-    );
+    )
+    .append("line")
+    .attr("x2", -(outerRadius - innerRadius))
+    .attr("stroke", "#000")
+    .append("text")
+    .attr("transform", (d) =>
+      (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
+        ? "rotate(90)translate(3,19)"
+        : "rotate(-90)translate(3,-12)"
+    )
+    .text((d) => months[d.getMonth()]);
 }
 
 function plotSatellites(x, y, data, year) {
-  return (g) =>
-    g.call((g) =>
-      g
-        .selectAll("g")
-        .data(data)
-        .join("g")
-        .attr(
-          "transform",
-          (d) => `
+  const satellites = d3
+    .select(".globalgroup")
+    .selectAll("g.sat-transform")
+    .data(data);
+  satellites
+    .enter()
+    .append("g")
+    .merge(satellites)
+    .attr("class", "sat-trasform")
+    .attr(
+      "transform",
+      (d) => `
           rotate(${
             ((x(d["Launch date"]) + x.bandwidth() / 2) * 180) / Math.PI - 90
           })
         `
-        )
-        .call(
-          (g) =>
-            g
-              .append("circle")
-              .attr("r", 5)
-              .attr("fill", "blue")
-              // .attr("cx", (d) => x(d["Launch date"]))
-              .attr("cx", (d) => y(d.Apogee))
-              .attr("cy", (d) => 0)
-              .append("svg:title")
-              .text((d) => JSON.stringify(d, null, 4)) // `(${d["Apogee"]}, ${d["Launch date"]})`)
+    )
+    .append("circle")
+    .transition()
+    .ease(d3.easeLinear)
+    .duration(transitionDuration)
+    .attr("r", 5)
+    .attr("fill", "blue")
+    .attr("cx", (d) => y(d.Apogee))
+    .attr("cy", 0);
 
-          // .attr("transform", (d) => `translate(-${y(d.Apogee)},0}`)
-        )
-    );
+  // .insert("svg:title")
+  // .text((d) => JSON.stringify(d, null, 4));
 }
 
 // TODO: Make this show up correctly
@@ -219,27 +204,38 @@ function renderGlobe() {
     .attr("height", `${innerRadius * 2}`);
 }
 
-var svg = d3
+const svg = d3
   .select("body")
   .append("svg")
   .attr("width", actual_width)
-  .attr("height", actual_height)
+  .attr("height", actual_height);
+
+const g = svg
   .append("g")
-  .attr("transform", `translate(${actual_width / 2},${actual_height / 2})`);
+  .attr("transform", `translate(${actual_width / 2},${actual_height / 2})`)
+  .classed("globalgroup", true);
 
 function render_graph(year, data) {
   unrender_graph();
-  data = data[year];
-  data = data ? data : [];
-  var x = generateXScale(year);
-  var y = generateYScale(data);
-  svg.append("g").call(generateXAxis(x, year));
-  svg.append("g").call(generateYAxis(y));
-  svg.append("g").call(generateMonthAxis(x, year));
-  svg.append("g").call(plotSatellites(x, y, data, year));
+  console.log("render graph");
+  const yearData = data[year];
+  console.log("assign yearData");
+  let x = generateXScale(year);
+  console.log("generateXscale");
+  let y = generateYScale(yearData);
+  console.log("generateYscale");
+  generateXAxis(x, year);
+  console.log("generateXAxis");
+  generateYAxis(y);
+  console.log("generateYAxis");
+  generateMonthAxis(x, year);
+  console.log("gen month");
+  plotSatellites(x, y, yearData, year);
+  console.log("plot satellites");
 }
 
 function unrender_graph() {
+  console.log("Unrender graph");
   d3.select("svg g").selectAll("g").remove();
 }
 

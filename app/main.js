@@ -1,40 +1,38 @@
+var year = 2020;
 var satdata = {};
-var waiting = true;
 
-async function load_json(callback) {
-  d3.json("./n2yo.json").then(function (data) {
-    for (var k in data) {
-      satdata[k] = [];
-      for (var i in data[k]) {
-        let sat = data[k][i];
-        sat["Launch date"] = n2yoDatetoDate(sat["Launch date"]);
-        sat["Decay date"] = n2yoDatetoDate(sat["Decay date"]);
-        sat.Apogee = parseFloat(sat.Apogee);
-        sat.Perigee = parseFloat(sat.Perigee);
-        satdata[k].push(sat);
-      }
-    }
+d3.json("./n2yo.json").then(function (data) {
+  Object.entries(data).forEach(([k, v], i) => {
+    v.forEach((sat) => {
+      sat["Launch date"] = n2yoDatetoDate(sat["Launch date"]);
+      sat["Decay date"] = n2yoDatetoDate(sat["Decay date"]);
+      sat.Apogee = parseFloat(sat.Apogee);
+      sat.Perigee = parseFloat(sat.Perigee);
+    });
   });
-  callback();
-}
-
-async function wait_for_json(to_call) {
-  function callback() {
-    waiting = true;
-  }
-
-  await load_json(callback);
-
-  var interval = setInterval(function () {
-    if (waiting === true) {
-      clearInterval(interval);
-      to_call();
-    }
-  }, 100);
-}
-
-function main() {
+  satdata = data;
+  // var init_s_val = d3.select("input").attr("value");
   init_render(year, satdata);
+});
+
+function debounced(delay, fn) {
+  let timerId;
+  return function (...args) {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+    timerId = setTimeout(() => {
+      fn(...args);
+      timerId = null;
+    }, delay);
+  };
 }
 
-wait_for_json(main);
+function slider_mouseup_render() {
+  console.log("yeet");
+  render_graph(year, satdata);
+}
+
+function change_slider(value) {
+  year = value;
+}
