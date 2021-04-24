@@ -28,11 +28,7 @@ function debounced(delay, fn) {
   };
 }
 
-function slider_mouseup_render() {
-  console.log("yeet");
-  render_graph(year, satdata);
-}
-
 function change_slider(value) {
-  year = value;
+  year = parseInt(value);
+  render_graph(year, satdata);
 }

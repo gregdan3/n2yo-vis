@@ -53,12 +53,11 @@ function makeCalDate(date) {
 }
 
 function getDatesOfYear(year) {
-  var end = new Date(year + 1, 0, 1);
-  var daysOfYear = [];
+  let end = new Date(year + 1, 0, 1);
+  let daysOfYear = [];
   for (var d = new Date(year, 0, 1); d < end; d.setDate(d.getDate() + 1)) {
     daysOfYear.push(new Date(d));
   }
-  console.log("dates generated");
   return daysOfYear;
 }
 
@@ -215,7 +214,7 @@ function renderYear(year) {
 }
 
 const svg = d3
-  .select("body")
+  .select(".svg-mount")
   .append("svg")
   .attr("width", actual_width)
   .attr("height", actual_height);
@@ -227,23 +226,14 @@ const g = svg
 
 function render_graph(year, data) {
   unrender_graph();
-  console.log("render year");
   renderYear(year);
-  console.log("render graph");
   const yearData = data[year];
-  console.log("assign yearData");
   let x = generateXScale(year);
-  console.log("generateXscale");
   let y = generateYScale(yearData);
-  console.log("generateYscale");
   generateXAxis(x, year);
-  console.log("generateXAxis");
   generateYAxis(y);
-  console.log("generateYAxis");
   generateMonthAxis(x, year);
-  console.log("gen month");
   plotSatellites(x, y, yearData, year);
-  console.log("plot satellites");
 }
 
 function unrender_graph() {
