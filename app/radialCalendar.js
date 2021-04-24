@@ -30,6 +30,63 @@ const height = actual_height - margin.top - margin.bottom;
 const outerRadius = Math.min(width, height) / 2;
 const innerRadius = outerRadius / 3;
 
+const classifications = [
+  "Space & Earth Science",
+  "Weather",
+  "Navy Navigation Satellite System",
+  "Experimental",
+  "Military",
+  "Amateur radio",
+  "Geostationary",
+  "Westford Needles",
+  "Brightest",
+  "Engineering",
+  "Radar Calibration",
+  "Intelsat",
+  "Strela",
+  "Tsiklon",
+  "Geodetic",
+  "Tselina",
+  "NOAA",
+  "Earth resources",
+  "Raduga",
+  "Molniya",
+  "Parus",
+  "GOES",
+  "Tsikada",
+  "Global Positioning System (GPS) Constellation",
+  "Gorizont",
+  "TV",
+  "Russian LEO Navigation",
+  "Glonass Constellation",
+  "Tracking and Data Relay Satellite System",
+  "ISS",
+  "Orbcomm",
+  "Gonets",
+  "Satellite-Based Augmentation System",
+  "Celestis",
+  "Search & rescue",
+  "Iridium",
+  "Global Positioning System (GPS) Operational",
+  "Globalstar",
+  "Education",
+  "CubeSats",
+  "Flock",
+  "Lemur",
+  "XM and Sirius",
+  "Beidou Navigation System",
+  "Disaster monitoring",
+  "Yaogan",
+  "Glonass Operational",
+  "OneWeb",
+  "QZSS",
+  "Galileo",
+  "O3B Networks",
+  "IRNSS",
+  "Starlink",
+];
+const color = d3.scaleOrdinal(d3.schemeTableau10).domain(classifications);
+
 // Build Day Numbers
 function padDate(n) {
   return n < 10 ? "0" + n : n;
@@ -86,19 +143,15 @@ function generateYAxis(y) {
   const g = yAxis.enter().append("g").merge(yAxis).attr("class", "y-axis");
   g.attr("fill", "none")
     .append("circle")
-    .attr("stroke", "#000")
-    .attr("stroke-opacity", 0.5)
+    .attr("stroke", "#fff")
+    .attr("stroke-opacity", 0.7)
     .attr("r", y);
   g.append("text")
     .attr("y", (d) => -y(d))
     .attr("dy", "1em")
     .attr("dx", "-1em")
-    .attr("stroke", "#fff")
-    .attr("stroke-width", 5)
-    .text(y.tickFormat(8, "s"))
-    .clone(true)
-    .attr("fill", "#000")
-    .attr("stroke", "none");
+    .attr("fill", "#fff")
+    .text(y.tickFormat(8, "s"));
 }
 
 function generateXAxis(x, year) {
@@ -110,7 +163,7 @@ function generateXAxis(x, year) {
     .attr("text-anchor", "left")
     .selectAll("g.x-axis")
     .data(getDatesOfYear(year));
-  xAxis
+  const transformed = xAxis
     .enter()
     .append("g")
     .merge(xAxis)
@@ -121,13 +174,17 @@ function generateXAxis(x, year) {
             rotate(${((x(d) + x.bandwidth() / 2) * 180) / Math.PI - 90})
             translate(${outerRadius},0)
             `
-    )
+    );
+  transformed
     .append("text")
+    .attr("fill", "#fff")
     .attr("transform", "translate(8,5)")
-    .text((d) => makeCalDate(d))
+    .text((d) => makeCalDate(d));
+  transformed
     .append("line")
     .attr("x2", 5)
-    .attr("stroke", "#000");
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 2);
 }
 
 // TODO: shift line slightly left so it's in between months
@@ -151,7 +208,7 @@ function generateMonthAxis(x, year) {
     )
     .append("line")
     .attr("x2", -(outerRadius - innerRadius))
-    .attr("stroke", "#000")
+    .attr("stroke", "#fff")
     .append("text")
     .attr("transform", (d) =>
       (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
@@ -184,16 +241,54 @@ function plotSatellites(x, y, data, year) {
   transformed
     .append("circle")
     .attr("class", "sat-point")
+    .attr("r", 5)
     .transition()
     .ease(d3.easeLinear)
     .duration(transitionDuration)
-    .attr("r", 5)
-    .attr("fill", "blue")
+    .attr("fill", (d) =>
+      color(d.Classification.length ? d.Classification[0] : "Unknown")
+    )
     .attr("cx", (d) => y(d.Apogee))
     .attr("cy", 0);
 }
 
-// TODO: Make this show up correctly
+function extractCategories(data) {
+  // Assumes you're dealing with data from a year
+  return [["Unclassified"], ...data.map((v) => v.Classification)].flat();
+}
+
+function generateLegend(data) {
+  const categories = [
+    "Unclassified",
+    ...new Set(data.map((v) => v.Classification).flat()),
+  ].sort();
+  const g = d3
+    .select(".globalgroup")
+    .append("g")
+    .selectAll("g")
+    .data(categories)
+    .join("g")
+    .attr(
+      "transform",
+      (d, i) =>
+        `translate(-${innerRadius - 100},${
+          (i - (categories.length - 1) / 2) * 20
+        })`
+    );
+  g.append("rect")
+    .attr("width", 18)
+    .attr("height", 18)
+    .attr("fill", (d) => color(d));
+  g.append("text")
+    .attr("x", 24)
+    .attr("y", 9)
+    .attr("dy", "0.35em")
+    .attr("stroke", "#000")
+    .attr("stroke-width", ".2")
+    .attr("fill", "#fff")
+    .text((d) => d);
+}
+
 function renderGlobe() {
   d3.select("g")
     .append("image")
@@ -214,7 +309,7 @@ function renderYear(year) {
     .attr("class", "year-display")
     .attr("x", 0)
     .attr("y", 0)
-    .attr("fill", "black")
+    .attr("fill", "#fff")
     .attr("style", "font-size: 8em;")
     .transition()
     .text(year);
@@ -237,6 +332,7 @@ function render_graph(year, data) {
   const yearData = data[year];
   let x = generateXScale(year);
   let y = generateYScale(yearData);
+  generateLegend(yearData);
   generateXAxis(x, year);
   generateYAxis(y);
   generateMonthAxis(x, year);
@@ -244,7 +340,6 @@ function render_graph(year, data) {
 }
 
 function unrender_graph() {
-  console.log("Unrender graph");
   d3.select("svg g").selectAll("g,text").remove();
 }
 
