@@ -296,7 +296,23 @@ function renderGlobe() {
     .attr("viewBox", `0 0 ${innerRadius * 2} ${innerRadius * 2}`)
     .attr("transform", `translate(-${innerRadius}, -${innerRadius})`)
     .attr("width", `${innerRadius * 2}`)
-    .attr("height", `${innerRadius * 2}`);
+    .attr("height", `${innerRadius * 2}`)
+    .attr("class", "earth");
+}
+
+function renderMoon() {
+  d3.select("g")
+    .append("image")
+    .attr("xlink:href", "http://localhost/moon.svg")
+    .attr("viewBox", `0 0 ${innerRadius / 2} ${innerRadius / 2}`)
+    .attr("transform", `translate(${outerRadius / 1.5}, -${outerRadius})`)
+    .attr("width", `${innerRadius / 2}`) // convenient way to make it scale with the calendar
+    .attr("height", `${innerRadius / 2}`)
+    .attr("class", "moon")
+    .insert("svg:title")
+    .text(
+      "The moon's actual apogee is roughly 406000 kilometers. \nThat's outside our scale!"
+    );
 }
 
 function renderYear(year) {
@@ -345,5 +361,6 @@ function unrender_graph() {
 
 function init_render(year, data) {
   renderGlobe();
+  renderMoon();
   render_graph(year, data);
 }
