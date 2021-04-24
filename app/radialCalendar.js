@@ -164,9 +164,10 @@ function generateMonthAxis(x, year) {
 function plotSatellites(x, y, data, year) {
   const satellites = d3
     .select(".globalgroup")
-    .selectAll("g.sat-transform")
-    .data(data);
-  satellites
+    .selectAll(".sat-transform,.sat-point");
+  satellites.remove();
+  const transformed = satellites
+    .data(data)
     .enter()
     .append("g")
     .merge(satellites)
@@ -178,8 +179,11 @@ function plotSatellites(x, y, data, year) {
             ((x(d["Launch date"]) + x.bandwidth() / 2) * 180) / Math.PI - 90
           })
         `
-    )
+    );
+  transformed.insert("svg:title").text((d) => JSON.stringify(d, null, 4));
+  transformed
     .append("circle")
+    .attr("class", "sat-point")
     .transition()
     .ease(d3.easeLinear)
     .duration(transitionDuration)
@@ -187,9 +191,6 @@ function plotSatellites(x, y, data, year) {
     .attr("fill", "blue")
     .attr("cx", (d) => y(d.Apogee))
     .attr("cy", 0);
-
-  // .insert("svg:title")
-  // .text((d) => JSON.stringify(d, null, 4));
 }
 
 // TODO: Make this show up correctly
@@ -204,12 +205,18 @@ function renderGlobe() {
 }
 
 function renderYear(year) {
-  d3.select("g")
-    .append("text")
-    .attr("x", -900)
-    .attr("y", -800)
+  let g = d3.select(".globalgroup");
+  let yearDisplay = d3.select(".year-display").node()
+    ? d3.select(".year-display")
+    : g.append("text");
+  yearDisplay
+    .attr("transform", `translate(-${outerRadius + 50}, -${outerRadius - 50})`)
+    .attr("class", "year-display")
+    .attr("x", 0)
+    .attr("y", 0)
     .attr("fill", "black")
     .attr("style", "font-size: 8em;")
+    .transition()
     .text(year);
 }
 
