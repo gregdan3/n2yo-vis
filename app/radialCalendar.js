@@ -292,7 +292,7 @@ function generateLegend(data) {
 function renderGlobe() {
   d3.select("g")
     .append("image")
-    .attr("xlink:href", "http://localhost/earth.svg")
+    .attr("xlink:href", "http://localhost/static/earth.svg")
     .attr("viewBox", `0 0 ${innerRadius * 2} ${innerRadius * 2}`)
     .attr("transform", `translate(-${innerRadius}, -${innerRadius})`)
     .attr("width", `${innerRadius * 2}`)
@@ -303,7 +303,7 @@ function renderGlobe() {
 function renderMoon() {
   d3.select("g")
     .append("image")
-    .attr("xlink:href", "http://localhost/moon.svg")
+    .attr("xlink:href", "http://localhost/static/moon.svg")
     .attr("viewBox", `0 0 ${innerRadius / 2} ${innerRadius / 2}`)
     .attr("transform", `translate(${outerRadius / 1.5}, -${outerRadius})`)
     .attr("width", `${innerRadius / 2}`) // convenient way to make it scale with the calendar
