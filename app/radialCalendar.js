@@ -204,6 +204,16 @@ function renderGlobe() {
     .attr("height", `${innerRadius * 2}`);
 }
 
+function renderYear(year) {
+  d3.select("g")
+    .append("text")
+    .attr("x", -900)
+    .attr("y", -800)
+    .attr("fill", "black")
+    .attr("style", "font-size: 8em;")
+    .text(year);
+}
+
 const svg = d3
   .select("body")
   .append("svg")
@@ -217,6 +227,8 @@ const g = svg
 
 function render_graph(year, data) {
   unrender_graph();
+  console.log("render year");
+  renderYear(year);
   console.log("render graph");
   const yearData = data[year];
   console.log("assign yearData");
@@ -236,7 +248,7 @@ function render_graph(year, data) {
 
 function unrender_graph() {
   console.log("Unrender graph");
-  d3.select("svg g").selectAll("g").remove();
+  d3.select("svg g").selectAll("g,text").remove();
 }
 
 function init_render(year, data) {
