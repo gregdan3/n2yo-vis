@@ -10,6 +10,13 @@ d3.json("static/n2yo.json").then(function (data) {
         : "";
       sat.Apogee = parseFloat(sat.Apogee);
       sat.Perigee = parseFloat(sat.Perigee);
+      if (sat["Decay date"]) {
+        if (sat["Info"]) {
+          sat["Info"] += "\n\nThis object's orbit has decayed.\n";
+        } else {
+          sat["Info"] = "This object's orbit has decayed.\n";
+        } // NOTE: NORAD 45610 has NO decay date. bruh.
+      }
     });
   });
   satdata = data;
