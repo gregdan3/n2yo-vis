@@ -37,16 +37,49 @@
         font-size: 6em;
       }
 
-      input[type=range] {
-          cursor: pointer;
-          background:#000;
-          width:50%;
-          position:fixed;
-          top:0;
-          left:25%;
-          text-align:center;
-          z-index:100;
+      input[type=range],input[type=range]:focus {
+        -webkit-appearance: none;
+        cursor: pointer;
+        background:none;
+        width:50%;
+        position:fixed;
+        top:0;
+        left:25%;
+        margin-top:6px;
+        text-align:center;
+        z-index:200;
       }
+      input[type=range]::-webkit-slider-runnable-track {
+        border-radius: 100%;
+        height:12px;
+        background: linear-gradient(90deg, rgba(15,15,15,1) 0%, rgba(180,180,180,1) 100%);
+        border: 0.01em solid black;
+      }
+      input[type=range]::-moz-range-track {
+        border-radius:100%;
+        height:10px;
+        background: linear-gradient(90deg, rgba(15,15,15,1) 0%, rgba(180,180,180,1) 100%);
+        border: 0.01em solid black;
+
+      }
+      input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height:20px;
+        width:10px;
+        background:cornflowerblue;
+        border-radius:20%;
+        border: 0.01em solid black;
+        margin-top:-5.5px
+      }
+      input[type=range]::-moz-range-thumb {
+        -webkit-appearance: none;
+        height:20px;
+        width:8px;
+        background:cornflowerblue;
+        border-radius:20%;
+        border: 0.01em solid black;
+      }
+
     </style>
   </head>
   <body>
@@ -56,7 +89,7 @@
     <h3>jmfrees@uab.edu</h3>
 
     <div id='control_panel' name='control_panel'>
-        <input type="range" id="slider" min=1957 max=2021 value=2020 step=1 oninput="debounced(1000,change_slider(this.value))" />
+        <input type="range" id="slider" min=1957 max=2021 value=2020 step=1 autocomplete="off" oninput="debounced(1000,change_slider(this.value))" />
     </div>
     <div class='year-mount'></div>
     <div class="svg-mount"></div>
