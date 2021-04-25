@@ -319,7 +319,7 @@ function renderMoon(x, y, year) {
     .attr("class", "moon")
     .insert("svg:title")
     .text(
-      "The moon's actual apogee is roughly 406000 kilometers. \nThat's outside our scale!"
+      "The moon's Apogee is roughly 406000 kilometers. \nInstead, the moon is graphed with its Perigee: 356,400 kilometers."
     );
 }
 
