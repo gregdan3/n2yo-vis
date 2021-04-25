@@ -1,5 +1,6 @@
 var year = 2020;
 var satdata = {};
+var orbitStat = "Apogee";
 
 d3.json("static/n2yo.json").then(function (data) {
   Object.entries(data).forEach(([k, v], i) => {
@@ -21,7 +22,7 @@ d3.json("static/n2yo.json").then(function (data) {
   });
   satdata = data;
   // var init_s_val = d3.select("input").attr("value");
-  init_render(year, satdata);
+  init_render(year, satdata, orbitStat);
 });
 
 function debounced(delay, fn) {
@@ -39,5 +40,15 @@ function debounced(delay, fn) {
 
 function change_slider(value) {
   year = parseInt(value);
-  render_graph(year, satdata);
+  render_graph(year, satdata, orbitStat);
+}
+
+function changeOrbitStat(checked) {
+  if (checked) {
+    orbitStat = "Apogee";
+  } else {
+    orbitStat = "Perigee";
+  }
+  this.text = orbitStat;
+  render_graph(year, satdata, orbitStat);
 }

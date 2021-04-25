@@ -37,6 +37,14 @@
         font-size: 6em;
       }
 
+      input[type=checkbox] {
+          position: fixed;
+          top: 0.3em;
+          right:22%;
+          text-align: center;
+          z-index: 100;
+      }
+
       input[type=range],input[type=range]:focus {
         -webkit-appearance: none;
         cursor: pointer;
@@ -90,6 +98,7 @@
 
     <div id='control_panel' name='control_panel'>
         <input type="range" id="slider" min=1957 max=2021 value=2020 step=1 autocomplete="off" oninput="debounced(1000,change_slider(this.value))" />
+        <input type="checkbox" id="checkbox" value=false autocomplete="off" oninput="changeOrbitStat(this.checked)" />
     </div>
     <div class='year-mount'></div>
     <div class="svg-mount"></div>

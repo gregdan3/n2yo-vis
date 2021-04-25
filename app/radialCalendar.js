@@ -136,10 +136,10 @@ function generateXScale(year) {
     .align(0);
 }
 
-function generateYScale(data) {
+function generateYScale(data, orbitStat) {
   return d3
     .scaleRadial()
-    .domain([0, d3.max(data, (d) => d.Apogee)])
+    .domain([0, d3.max(data, (d) => d[orbitStat])])
     .range([innerRadius, outerRadius]);
 }
 
@@ -298,7 +298,7 @@ function prettyN2yoJSON(satjson) {
   return outstr;
 }
 
-function plotSatellites(x, y, data, year) {
+function plotSatellites(x, y, data, year, orbitStat) {
   const satellites = d3
     .select(".globalgroup")
     .selectAll(".sat-transform,.sat-point");
@@ -328,8 +328,8 @@ function plotSatellites(x, y, data, year) {
     .attr("fill", (d) =>
       color(d.Classification.length ? d.Classification[0] : "Unknown")
     )
-    .attr("stroke", (d) => (d.Apogee ? "black" : "red"))
-    .attr("cx", (d) => (d.Apogee ? y(d.Apogee) : y(1) - 20))
+    .attr("stroke", (d) => (d[orbitStat] ? "black" : "red"))
+    .attr("cx", (d) => (d[orbitStat] ? y(d[orbitStat]) : y(1) - 20))
     .attr("cy", 0);
 }
 
@@ -384,26 +384,29 @@ function renderGlobe() {
     .attr("class", "earth");
 }
 
-function renderMoon(x, y, year) {
-  let moonPerigee = 356400; // lowest observed
-  let moonDay = new Date(`${year} February 14`); // stand-in
+function renderMoon(x, y, year, orbitStat) {
+  let moon = {
+    moonday: new Date(`${year} February 14`),
+    Apogee: 405000,
+    Perigee: 356400,
+  };
   d3.select("g")
     .append("image")
     .attr("xlink:href", "http://localhost/static/moon.svg")
     .attr("viewBox", `0 0 ${innerRadius / 2} ${innerRadius / 2}`)
     .attr(
       "transform",
-      `rotate(${((x(moonDay) + x.bandwidth() / 2) * 180) / Math.PI - 90})`
+      `rotate(${((x(moon.moonday) + x.bandwidth() / 2) * 180) / Math.PI - 90})`
     )
     .attr("width", `${innerRadius / 2}`) // convenient way to make it scale with the calendar
     .attr("height", `${innerRadius / 2}`)
-    .attr("x", y(moonPerigee) - innerRadius / 4) // vaguely centered on its perigee
-    // it was rendering perigee at bottom left corner
+    .attr("x", y(moon[orbitStat]) - innerRadius / 4)
+    // adjustment to get center closer to rendered stat
     .attr("y", "0")
     .attr("class", "moon")
     .insert("svg:title")
     .text(
-      "The moon's Apogee is roughly 406000 kilometers. \nInstead, the moon is graphed with its Perigee: 356,400 kilometers."
+      "The moon's Apogee is 405000 kilometers.\nIts Perigee is 356400 kilometers."
     );
 }
 
@@ -455,18 +458,18 @@ const g = svg
 
 svg.call(zoom);
 
-function render_graph(year, data) {
+function render_graph(year, data, orbitStat) {
   unrender_graph();
   renderYear(year);
   const yearData = data[year];
   let x = generateXScale(year);
-  let y = generateYScale(yearData);
-  renderMoon(x, y, year, yearData);
+  let y = generateYScale(yearData, orbitStat);
+  renderMoon(x, y, year, orbitStat);
   generateLegend(yearData);
   generateXAxis(x, year);
   generateYAxis(y);
   generateMonthAxis(x, year);
-  plotSatellites(x, y, yearData, year);
+  plotSatellites(x, y, yearData, year, orbitStat);
 }
 
 function unrender_graph() {
@@ -475,7 +478,7 @@ function unrender_graph() {
   // putting the two together broke calendar remove
 }
 
-function init_render(year, data) {
+function init_render(year, data, orbitStat) {
   renderGlobe();
-  render_graph(year, data);
+  render_graph(year, data, orbitStat);
 }
