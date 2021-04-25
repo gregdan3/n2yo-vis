@@ -235,33 +235,39 @@ function generateMonthAxis(x, year) {
 function prettyN2yoJSON(satjson) {
   var outstr = "";
   for (var key in satjson) {
-    switch (key) {
-      case "Name": // always present
-        outstr += `${satjson[key]}\n\n`;
-        break;
-      case "Classification":
-        if (satjson[key].length > 0) {
-          outstr += `${key}:\n`;
-          satjson[key].forEach((d) => (outstr += `    ${d}\n`));
-        }
-        break;
-      case "Launch date":
-      case "Decay date":
-        if (satjson[key]) {
+    if (satjson[key]) {
+      switch (key) {
+        case "Name": // always present
+          outstr += `${satjson[key]}\n\n`;
+          break;
+        case "Classification":
+          if (satjson[key].length > 0) {
+            outstr += `${key}:\n`;
+            satjson[key].forEach((d) => (outstr += `    ${d}\n`));
+          }
+          break;
+        case "Perigee":
+        case "Apogee":
+        case "Semi major axis":
+          outstr += `${key}: ${satjson[key]} kilometers\n`;
+          break;
+        case "Inclination":
+          outstr += `${key}: ${satjson[key]}°\n`;
+          break;
+        case "Period":
+          outstr += `${key}: ${satjson[key]} minutes\n`;
+          break;
+        case "Launch date":
+        case "Decay date":
           outstr += `${key}: ${satjson[key].yearMStrDay()}\n`;
-        }
-
-        break;
-      case "Note":
-      case "Info": // one always ends
-        if (satjson[key]) {
+          break;
+        case "Note":
+        case "Info": // one always ends
           outstr += `\n\n${satjson[key]}\n`;
-        }
-        break;
-      default:
-        if (satjson[key]) {
+          break;
+        default:
           outstr += `${key}: ${satjson[key]}\n`;
-        }
+      }
     }
   }
   return outstr;
