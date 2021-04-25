@@ -312,6 +312,9 @@ function generateLegend(data) {
     "Unclassified",
     ...new Set(data.map((v) => v.Classification).flat()),
   ].sort();
+  let scale = 1 / (categories.length / 20);
+  console.log(categories.length);
+  console.log(scale);
   const g = d3
     .select(".globalgroup")
     .append("g")
@@ -321,18 +324,18 @@ function generateLegend(data) {
     .attr(
       "transform",
       (d, i) =>
-        `translate(-${innerRadius - 100},${
-          (i - (categories.length - 1) / 2) * 20
+        `translate(-${innerRadius - 120},${
+          (i - (categories.length - 1) / 2) * (20 * scale)
         })`
     );
   g.append("rect")
-    .attr("width", 18)
-    .attr("height", 18)
+    .attr("width", 18 * scale)
+    .attr("height", 18 * scale)
     .attr("stroke", "none")
     .attr("fill", (d) => color(d));
   g.append("text")
-    .attr("x", 24)
-    .attr("y", 9)
+    .attr("x", 24 * scale)
+    .attr("y", 9 * scale)
     .attr("dy", "0.35em")
     .attr("stroke", "#000")
     .attr("stroke-width", ".2")
