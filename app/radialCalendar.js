@@ -101,6 +101,12 @@ Date.prototype.getDOY = function () {
   return dayOfYear;
 };
 
+Date.prototype.yearMStrDay = function () {
+  var mm = this.getMonth();
+  var dd = this.getDate(); //Day of Week
+  return [this.getFullYear(), months[mm], dd].join(" "); // padding
+};
+
 function n2yoDatetoDate(n2yoDate) {
   return new Date(n2yoDate);
 }
@@ -226,6 +232,41 @@ function generateMonthAxis(x, year) {
     .text((d) => months[d.getMonth()]);
 }
 
+function prettyN2yoJSON(satjson) {
+  var outstr = "";
+  for (var key in satjson) {
+    switch (key) {
+      case "Name": // always present
+        outstr += `${satjson[key]}\n\n`;
+        break;
+      case "Classification":
+        if (satjson[key].length > 0) {
+          outstr += `${key}:\n`;
+          satjson[key].forEach((d) => (outstr += `    ${d}\n`));
+        }
+        break;
+      case "Launch date":
+      case "Decay date":
+        if (satjson[key]) {
+          outstr += `${key}: ${satjson[key].yearMStrDay()}\n`;
+        }
+
+        break;
+      case "Note":
+      case "Info": // one always ends
+        if (satjson[key]) {
+          outstr += `\n\n${satjson[key]}\n`;
+        }
+        break;
+      default:
+        if (satjson[key]) {
+          outstr += `${key}: ${satjson[key]}\n`;
+        }
+    }
+  }
+  return outstr;
+}
+
 function plotSatellites(x, y, data, year) {
   const satellites = d3
     .select(".globalgroup")
@@ -245,7 +286,7 @@ function plotSatellites(x, y, data, year) {
           })
         `
     );
-  transformed.insert("svg:title").text((d) => JSON.stringify(d, null, 4));
+  transformed.insert("svg:title").text((d) => prettyN2yoJSON(d));
   transformed
     .append("circle")
     .attr("class", "sat-point")
