@@ -416,18 +416,9 @@ function renderMoon(x, y, year) {
 }
 
 function renderYear(year) {
-  let g = d3.select(".globalgroup");
-  let yearDisplay = d3.select(".year-display").node()
-    ? d3.select(".year-display")
-    : g.append("text");
-  yearDisplay
-    .attr("transform", `translate(-${outerRadius + 50}, -${outerRadius - 50})`)
+  d3.select(".year-mount")
+    .append("text")
     .attr("class", "year-display")
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("fill", "#fff")
-    .attr("style", "font-size: 8em;")
-    .transition()
     .text(year);
 }
 
@@ -488,6 +479,8 @@ function render_graph(year, data) {
 
 function unrender_graph() {
   d3.select("svg g").selectAll("g,text,image[class='moon']").remove();
+  d3.select(".year-mount").selectAll("text").remove();
+  // putting the two together broke calendar remove
 }
 
 function init_render(year, data) {

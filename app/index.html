@@ -21,6 +21,21 @@
       circle.sat-point {
           stroke-width: 1;
       }
+      div.year-mount {
+          /* year anchor placement */
+          position: fixed;
+          top: 0;
+          left: 1;
+          text-align: center;
+          z-index: 100;
+      }
+      text.year-display {
+        /* won't respect text formatting? */
+        color: white;
+        stroke: black;
+        stroke-width: .5em;
+        font-size: 6em;
+      }
 
       input[type=range] {
           cursor: pointer;
@@ -43,8 +58,9 @@
     <div id='control_panel' name='control_panel'>
         <input type="range" id="slider" min=1957 max=2021 value=2020 step=1 oninput="debounced(1000,change_slider(this.value))" />
     </div>
-    </center>
+    <div class='year-mount'></div>
     <div class="svg-mount"></div>
+    </center>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="main.js"></script>
     <script src="radialCalendar.js"></script>
