@@ -177,7 +177,11 @@ function generateXAxis(x, year) {
     );
   transformed
     .append("text")
-    .attr("fill", "#fff")
+    .attr("class", "date-text")
+    .attr("fill", (d) => {
+      let day = d.getDay();
+      return day == 0 || day == 6 ? "#02bfe7" : "#fff";
+    })
     .attr("transform", "translate(8,5)")
     .text((d) => makeCalDate(d));
   transformed
@@ -194,7 +198,7 @@ function generateMonthAxis(x, year) {
     .select(".globalgroup")
     .selectAll("g.month-axis")
     .data(getDatesOfYear(year).filter((d) => d.getDate() === 1));
-  monthAxis
+  const transformed = monthAxis
     .enter()
     .append("g")
     .merge(monthAxis)
@@ -205,16 +209,20 @@ function generateMonthAxis(x, year) {
           rotate(${((x(d) + x.bandwidth() / 2) * 180) / Math.PI - 90})
           translate(${outerRadius},0)
         `
-    )
+    );
+  transformed
     .append("line")
     .attr("x2", -(outerRadius - innerRadius))
-    .attr("stroke", "#fff")
+    .attr("stroke", "#fff");
+  transformed
     .append("text")
+    .attr("class", "month-text")
     .attr("transform", (d) =>
       (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
         ? "rotate(90)translate(3,19)"
         : "rotate(-90)translate(3,-12)"
     )
+    .attr("fill", "white")
     .text((d) => months[d.getMonth()]);
 }
 
@@ -248,7 +256,8 @@ function plotSatellites(x, y, data, year) {
     .attr("fill", (d) =>
       color(d.Classification.length ? d.Classification[0] : "Unknown")
     )
-    .attr("cx", (d) => y(d.Apogee))
+    .attr("stroke", (d) => (d.Apogee ? "black" : "red"))
+    .attr("cx", (d) => (d.Apogee ? y(d.Apogee) : y(0) - 20))
     .attr("cy", 0);
 }
 
@@ -278,6 +287,7 @@ function generateLegend(data) {
   g.append("rect")
     .attr("width", 18)
     .attr("height", 18)
+    .attr("stroke", "none")
     .attr("fill", (d) => color(d));
   g.append("text")
     .attr("x", 24)
@@ -339,16 +349,47 @@ function renderYear(year) {
     .text(year);
 }
 
+function zoomed({ transform }) {
+  svg.attr("transform", transform);
+}
+
+const zoom = d3
+  .zoom()
+  .filter((e) => {
+    if (e.type === "wheel") {
+      // don't allow zooming without pressing [ctrl] key
+      console.log(`key ${e.shiftKey}`);
+      return e.shiftKey;
+    }
+
+    return true;
+  })
+  .scaleExtent([1, 40])
+  .translateExtent([
+    [0, 0],
+    [actual_width, actual_height],
+  ])
+  .extent([
+    [0, 0],
+    [actual_width, actual_height],
+  ])
+  .on("zoom", zoomed);
+
 const svg = d3
   .select(".svg-mount")
   .append("svg")
   .attr("width", actual_width)
-  .attr("height", actual_height);
+  .attr("height", actual_height)
+  .attr("stroke", "#aeb0b5")
+  .attr("stroke-width", 5)
+  .attr("viewBox", [0, 0, actual_width, actual_height]);
 
 const g = svg
   .append("g")
   .attr("transform", `translate(${actual_width / 2},${actual_height / 2})`)
   .classed("globalgroup", true);
+
+// svg.call(zoom);
 
 function render_graph(year, data) {
   unrender_graph();
