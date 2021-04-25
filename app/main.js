@@ -5,7 +5,9 @@ d3.json("./n2yo.json").then(function (data) {
   Object.entries(data).forEach(([k, v], i) => {
     v.forEach((sat) => {
       sat["Launch date"] = n2yoDatetoDate(sat["Launch date"]);
-      sat["Decay date"] = n2yoDatetoDate(sat["Decay date"]);
+      sat["Decay date"] = sat["Decay date"]
+        ? n2yoDatetoDate(sat["Decay date"])
+        : "";
       sat.Apogee = parseFloat(sat.Apogee);
       sat.Perigee = parseFloat(sat.Perigee);
     });
