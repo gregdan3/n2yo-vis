@@ -278,6 +278,7 @@ function generateLegend(data) {
   g.append("rect")
     .attr("width", 18)
     .attr("height", 18)
+    .attr("stroke", "none")
     .attr("fill", (d) => color(d));
   g.append("text")
     .attr("x", 24)
@@ -339,16 +340,47 @@ function renderYear(year) {
     .text(year);
 }
 
+function zoomed({ transform }) {
+  svg.attr("transform", transform);
+}
+
+const zoom = d3
+  .zoom()
+  .filter((e) => {
+    if (e.type === "wheel") {
+      // don't allow zooming without pressing [ctrl] key
+      console.log(`key ${e.shiftKey}`);
+      return e.shiftKey;
+    }
+
+    return true;
+  })
+  .scaleExtent([1, 40])
+  .translateExtent([
+    [0, 0],
+    [actual_width, actual_height],
+  ])
+  .extent([
+    [0, 0],
+    [actual_width, actual_height],
+  ])
+  .on("zoom", zoomed);
+
 const svg = d3
   .select(".svg-mount")
   .append("svg")
   .attr("width", actual_width)
-  .attr("height", actual_height);
+  .attr("height", actual_height)
+  .attr("stroke", "#aeb0b5")
+  .attr("stroke-width", 5)
+  .attr("viewBox", [0, 0, actual_width, actual_height]);
 
 const g = svg
   .append("g")
   .attr("transform", `translate(${actual_width / 2},${actual_height / 2})`)
   .classed("globalgroup", true);
+
+// svg.call(zoom);
 
 function render_graph(year, data) {
   unrender_graph();
