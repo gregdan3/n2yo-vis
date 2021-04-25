@@ -302,7 +302,7 @@ function renderGlobe() {
 
 function renderMoon(x, y, year) {
   let moonPerigee = 356400; // lowest observed
-  let moonDay = new Date(`${year}-02-14`); // stand-in
+  let moonDay = new Date(`${year} February 14`); // stand-in
   d3.select("g")
     .append("image")
     .attr("xlink:href", "http://localhost/static/moon.svg")
