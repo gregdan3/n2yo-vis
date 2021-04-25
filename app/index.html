@@ -18,11 +18,19 @@
           stroke: black;
           stroke-width: .01em;
       }
-      label {
-          color: white;
-      }
       circle.sat-point {
           stroke-width: 1;
+      }
+
+      input[type=range] {
+          cursor: pointer;
+          background:#000;
+          width:50%;
+          position:fixed;
+          top:0;
+          left:25%;
+          text-align:center;
+          z-index:100;
       }
     </style>
   </head>
@@ -33,7 +41,6 @@
     <h3>jmfrees@uab.edu</h3>
 
     <div id='control_panel' name='control_panel'>
-        <label for="slider">Year:</label>
         <input type="range" id="slider" min=1957 max=2021 value=2020 step=1 oninput="debounced(1000,change_slider(this.value))" />
     </div>
     </center>
