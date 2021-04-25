@@ -237,15 +237,19 @@ function prettyN2yoJSON(satjson) {
   for (var key in satjson) {
     if (satjson[key]) {
       switch (key) {
+        /* No key */
         case "Name": // always present
           outstr += `${satjson[key]}\n\n`;
           break;
+        /* List of subelements */
         case "Classification":
           if (satjson[key].length > 0) {
             outstr += `${key}:\n`;
             satjson[key].forEach((d) => (outstr += `    ${d}\n`));
+            outstr += `\n`;
           }
           break;
+        /* Units */
         case "Perigee":
         case "Apogee":
         case "Semi major axis":
@@ -261,6 +265,7 @@ function prettyN2yoJSON(satjson) {
         case "Decay date":
           outstr += `${key}: ${satjson[key].yearMStrDay()}\n`;
           break;
+        /* No key + extra newlines */
         case "Note":
         case "Info": // one always ends
           outstr += `\n\n${satjson[key]}\n`;
