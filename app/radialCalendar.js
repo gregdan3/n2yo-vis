@@ -300,14 +300,22 @@ function renderGlobe() {
     .attr("class", "earth");
 }
 
-function renderMoon() {
+function renderMoon(x, y, year) {
+  let moonPerigee = 356400; // lowest observed
+  let moonDay = new Date(`${year}-02-14`); // stand-in
   d3.select("g")
     .append("image")
     .attr("xlink:href", "http://localhost/static/moon.svg")
     .attr("viewBox", `0 0 ${innerRadius / 2} ${innerRadius / 2}`)
-    .attr("transform", `translate(${outerRadius / 1.5}, -${outerRadius})`)
+    .attr(
+      "transform",
+      `rotate(${((x(moonDay) + x.bandwidth() / 2) * 180) / Math.PI - 90})`
+    )
     .attr("width", `${innerRadius / 2}`) // convenient way to make it scale with the calendar
     .attr("height", `${innerRadius / 2}`)
+    .attr("x", y(moonPerigee) - innerRadius / 4) // vaguely centered on its perigee
+    // it was rendering perigee at bottom left corner
+    .attr("y", "0")
     .attr("class", "moon")
     .insert("svg:title")
     .text(
@@ -348,6 +356,7 @@ function render_graph(year, data) {
   const yearData = data[year];
   let x = generateXScale(year);
   let y = generateYScale(yearData);
+  renderMoon(x, y, year, yearData);
   generateLegend(yearData);
   generateXAxis(x, year);
   generateYAxis(y);
@@ -356,11 +365,10 @@ function render_graph(year, data) {
 }
 
 function unrender_graph() {
-  d3.select("svg g").selectAll("g,text").remove();
+  d3.select("svg g").selectAll("g,text,image[class='moon']").remove();
 }
 
 function init_render(year, data) {
   renderGlobe();
-  renderMoon();
   render_graph(year, data);
 }
