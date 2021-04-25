@@ -177,7 +177,11 @@ function generateXAxis(x, year) {
     );
   transformed
     .append("text")
-    .attr("fill", "#fff")
+    .attr("class", "date-text")
+    .attr("fill", (d) => {
+      let day = d.getDay();
+      return day == 0 || day == 6 ? "#02bfe7" : "#fff";
+    })
     .attr("transform", "translate(8,5)")
     .text((d) => makeCalDate(d));
   transformed
@@ -194,7 +198,7 @@ function generateMonthAxis(x, year) {
     .select(".globalgroup")
     .selectAll("g.month-axis")
     .data(getDatesOfYear(year).filter((d) => d.getDate() === 1));
-  monthAxis
+  const transformed = monthAxis
     .enter()
     .append("g")
     .merge(monthAxis)
@@ -205,16 +209,20 @@ function generateMonthAxis(x, year) {
           rotate(${((x(d) + x.bandwidth() / 2) * 180) / Math.PI - 90})
           translate(${outerRadius},0)
         `
-    )
+    );
+  transformed
     .append("line")
     .attr("x2", -(outerRadius - innerRadius))
-    .attr("stroke", "#fff")
+    .attr("stroke", "#fff");
+  transformed
     .append("text")
+    .attr("class", "month-text")
     .attr("transform", (d) =>
       (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
         ? "rotate(90)translate(3,19)"
         : "rotate(-90)translate(3,-12)"
     )
+    .attr("fill", "white")
     .text((d) => months[d.getMonth()]);
 }
 
@@ -248,7 +256,8 @@ function plotSatellites(x, y, data, year) {
     .attr("fill", (d) =>
       color(d.Classification.length ? d.Classification[0] : "Unknown")
     )
-    .attr("cx", (d) => y(d.Apogee))
+    .attr("stroke", (d) => (d.Apogee ? "black" : "red"))
+    .attr("cx", (d) => (d.Apogee ? y(d.Apogee) : y(0) - 20))
     .attr("cy", 0);
 }
 
