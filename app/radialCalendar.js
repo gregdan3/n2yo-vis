@@ -262,8 +262,16 @@ function prettyN2yoJSON(satjson) {
           outstr += `${key}: ${satjson[key]} minutes\n`;
           break;
         case "Launch date":
+          outstr += `${key}: ${satjson[key].yearMStrDay()}\n`;
+          break;
         case "Decay date":
           outstr += `${key}: ${satjson[key].yearMStrDay()}\n`;
+          if (satjson["Info"]) {
+            // more space
+            satjson["Info"] += "\n\nThis object's orbit has decayed.\n";
+          } else {
+            satjson["Info"] = "This object's orbit has decayed.\n";
+          } // NOTE: NORAD 45610 has NO decay date. bruh.
           break;
         /* No key + extra newlines */
         case "Note":
