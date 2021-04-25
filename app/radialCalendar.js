@@ -115,6 +115,10 @@ function makeCalDate(date) {
   return `${padDate(date.getDate())} ${days[date.getDay()]}`;
 }
 
+function makeCalDateReordered(date) {
+  return `${days[date.getDay()]} ${padDate(date.getDate())}`;
+}
+
 function getDatesOfYear(year) {
   let end = new Date(year + 1, 0, 1);
   let daysOfYear = [];
@@ -149,6 +153,7 @@ function generateYAxis(y) {
   const g = yAxis.enter().append("g").merge(yAxis).attr("class", "y-axis");
   g.attr("fill", "none")
     .append("circle")
+    .attr("stroke-width", 2)
     .attr("stroke", "#fff")
     .attr("stroke-opacity", 0.7)
     .attr("r", y);
@@ -163,6 +168,11 @@ function generateYAxis(y) {
 function generateXAxis(x, year) {
   // This creates the state names in the example.
   // We will use this to create the day labels
+  const is_q1_or_q4 = (d) => {
+    let pos = (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI);
+    return Math.PI / 2 < pos && pos < (3 * Math.PI) / 2;
+  };
+
   const xAxis = d3
     .select(".globalgroup")
     .append("g")
@@ -188,8 +198,17 @@ function generateXAxis(x, year) {
       let day = d.getDay();
       return day == 0 || day == 6 ? "#02bfe7" : "#fff";
     })
-    .attr("transform", "translate(8,5)")
-    .text((d) => makeCalDate(d));
+    .attr("transform", (d) => {
+      let is_q1_q4 = is_q1_or_q4(d);
+      return `rotate(${is_q1_q4 ? 0 : -180})
+        ${is_q1_q4 ? "translate(8, 5)" : "translate(-8, 5)"}
+    `;
+    })
+    .attr("text-anchor", (d) => {
+      let is_q1_q4 = is_q1_or_q4(d);
+      return is_q1_q4 ? "left" : "end";
+    })
+    .text((d) => (is_q1_or_q4(d) ? makeCalDate(d) : makeCalDateReordered(d)));
   transformed
     .append("line")
     .attr("x2", 5)
@@ -219,6 +238,7 @@ function generateMonthAxis(x, year) {
   transformed
     .append("line")
     .attr("x2", -(outerRadius - innerRadius))
+    .attr("stroke-width", 3)
     .attr("stroke", "#fff");
   transformed
     .append("text")
@@ -317,7 +337,7 @@ function plotSatellites(x, y, data, year) {
       color(d.Classification.length ? d.Classification[0] : "Unknown")
     )
     .attr("stroke", (d) => (d.Apogee ? "black" : "red"))
-    .attr("cx", (d) => (d.Apogee ? y(d.Apogee) : y(0) - 20))
+    .attr("cx", (d) => (d.Apogee ? y(d.Apogee) : y(1) - 20))
     .attr("cy", 0);
 }
 
@@ -332,8 +352,7 @@ function generateLegend(data) {
     ...new Set(data.map((v) => v.Classification).flat()),
   ].sort();
   let scale = 1 / (categories.length / 20);
-  console.log(categories.length);
-  console.log(scale);
+  scale = scale > 1 ? 1 : scale;
   const g = d3
     .select(".globalgroup")
     .append("g")
@@ -420,22 +439,22 @@ const zoom = d3
   .zoom()
   .filter((e) => {
     if (e.type === "wheel") {
-      // don't allow zooming without pressing [ctrl] key
+      // don't allow zooming without pressing [shift] key
       console.log(`key ${e.shiftKey}`);
       return e.shiftKey;
     }
 
     return true;
   })
-  .scaleExtent([1, 40])
-  .translateExtent([
-    [0, 0],
-    [actual_width, actual_height],
-  ])
+  // .translateExtent([
+  //   [0, 0],
+  //   [actual_width, actual_height],
+  // ])
   .extent([
     [0, 0],
     [actual_width, actual_height],
   ])
+  .scaleExtent([1, 8])
   .on("zoom", zoomed);
 
 const svg = d3
@@ -443,16 +462,15 @@ const svg = d3
   .append("svg")
   .attr("width", actual_width)
   .attr("height", actual_height)
-  .attr("stroke", "#aeb0b5")
-  .attr("stroke-width", 5)
-  .attr("viewBox", [0, 0, actual_width, actual_height]);
+  //.attr("viewBox", [0, 0, actual_width, actual_height])
+  .attr("border", "white solid 1px");
 
 const g = svg
   .append("g")
   .attr("transform", `translate(${actual_width / 2},${actual_height / 2})`)
   .classed("globalgroup", true);
 
-// svg.call(zoom);
+svg.call(zoom);
 
 function render_graph(year, data) {
   unrender_graph();
