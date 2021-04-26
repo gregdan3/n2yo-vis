@@ -45,10 +45,10 @@ function change_slider(value) {
 
 function changeOrbitStat(checked) {
   if (checked) {
-    orbitStat = "Apogee";
-  } else {
     orbitStat = "Perigee";
+  } else {
+    orbitStat = "Apogee";
   }
-  this.text = orbitStat;
+  document.querySelector("label[for=checkbox").innerHTML = orbitStat; // look
   render_graph(year, satdata, orbitStat);
 }

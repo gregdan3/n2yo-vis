@@ -12,7 +12,7 @@
           font-family: "nasa";
           src: url("./static/nasalization-free.regular.ttf");
       }
-      text, h1, h2, h3 {
+      label, text, h1, h2, h3 {
           font-family: "nasa";
           color: white;
           stroke: black;
@@ -38,9 +38,17 @@
       }
 
       input[type=checkbox] {
+        cursor: pointer;
+        position: fixed;
+        top: 0.3em;
+        right:21.5%;
+        text-align: center;
+        z-index: 100;
+      }
+      label[for=checkbox] {
           position: fixed;
-          top: 0.3em;
-          right:22%;
+          top: 0.45em;
+          right:18%;
           text-align: center;
           z-index: 100;
       }
@@ -98,6 +106,7 @@
 
     <div id='control_panel' name='control_panel'>
         <input type="range" id="slider" min=1957 max=2021 value=2020 step=1 autocomplete="off" oninput="debounced(1000,change_slider(this.value))" />
+        <label for="checkbox">Apogee</label>
         <input type="checkbox" id="checkbox" value=false autocomplete="off" oninput="changeOrbitStat(this.checked)" />
     </div>
     <div class='year-mount'></div>
