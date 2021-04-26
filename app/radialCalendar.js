@@ -481,8 +481,13 @@ function generateLegend(data) {
     .attr("dy", "0.35em")
     .attr("stroke", "#000")
     .attr("stroke-width", ".2")
+    .attr("fill", "#000")
+    .attr("filter", "blur(.07em)")
+    .text((d) => d)
+    .clone(true)
     .attr("fill", "#fff")
-    .text((d) => d);
+    .attr("stroke", "none")
+    .attr("filter", "none");
 }
 
 function renderGlobe() {
