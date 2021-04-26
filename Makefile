@@ -19,6 +19,8 @@ stop:
 remove:
 	docker rm n2yovis
 
+start: build run
+
 clean: stop remove
 
-reset: stop remove build run
+reset: clean start
