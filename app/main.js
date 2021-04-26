@@ -11,12 +11,13 @@ d3.json("static/n2yo.json").then(function (data) {
         : "";
       sat.Apogee = parseFloat(sat.Apogee);
       sat.Perigee = parseFloat(sat.Perigee);
-      if (sat["Decay date"]) {
+      if (sat["Decay date"] || !(sat.Apogee && sat.Perigee)) {
         if (sat["Info"]) {
-          sat["Info"] += "\n\nThis object's orbit has decayed.\n";
+          sat["Info"] += "\n\nThis object's orbit has decayed.";
         } else {
-          sat["Info"] = "This object's orbit has decayed.\n";
+          sat["Info"] = "This object's orbit has decayed.";
         } // NOTE: NORAD 45610 has NO decay date. bruh.
+        // forces us to check presence of apogee/perigee
       }
     });
   });
