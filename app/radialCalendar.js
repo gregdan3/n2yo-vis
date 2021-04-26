@@ -21,9 +21,9 @@ const margin = {
   bottom: 75,
   left: 75,
 };
-const actual_width = 1900;
+const actual_width = 1880;
 const width = actual_width - margin.left - margin.right;
-const actual_height = 1900;
+const actual_height = 1880;
 const height = actual_height - margin.top - margin.bottom;
 
 // Might delete later
@@ -486,7 +486,7 @@ function generateLegend(data) {
 }
 
 function renderGlobe() {
-  d3.select("g")
+  d3.select(".globalgroup")
     .append("image")
     .attr("xlink:href", "http://localhost/static/earth.svg")
     .attr("viewBox", `0 0 ${innerRadius * 2} ${innerRadius * 2}`)
@@ -502,7 +502,7 @@ function renderMoon(x, y, year, orbitStat) {
     Apogee: 405000,
     Perigee: 356400,
   };
-  d3.select("g")
+  d3.select(".globalgroup")
     .append("image")
     .attr("xlink:href", "http://localhost/static/moon.svg")
     .attr("viewBox", `0 0 ${innerRadius / 2} ${innerRadius / 2}`)
@@ -544,14 +544,14 @@ const zoom = d3
 
     return true;
   })
-  // .translateExtent([
-  //   [0, 0],
-  //   [actual_width, actual_height],
-  // ])
-  .extent([
+  .translateExtent([
     [0, 0],
     [actual_width, actual_height],
   ])
+  //.extent([
+  //  [0, 0],
+  //  [actual_width, actual_height],
+  //])
   .scaleExtent([1, 8])
   .on("zoom", zoomed);
 
@@ -560,8 +560,19 @@ const svg = d3
   .append("svg")
   .attr("width", actual_width)
   .attr("height", actual_height)
-  //.attr("viewBox", [0, 0, actual_width, actual_height])
-  .attr("border", "white solid 1px");
+  .attr("viewBox", [0, 0, actual_width, actual_height])
+  .attr("border", "white solid 1px")
+  .append("svg")
+  .attr("width", actual_width)
+  .attr("height", actual_height)
+  .attr("class", "zoom-scale");
+
+// Allow grab for zoom anywhere
+svg
+  .append("rect")
+  .attr("width", actual_width)
+  .attr("height", actual_height)
+  .attr("fill-opacity", ".01");
 
 const g = svg
   .append("g")
