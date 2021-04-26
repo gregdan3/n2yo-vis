@@ -36,6 +36,17 @@
         stroke-width: .5em;
         font-size: 6em;
       }
+      .column {
+        float: left;
+        width: 33.33%;
+      }
+
+        /* Clear floats after the columns */
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
 
       input[type=checkbox] {
         position: fixed;
@@ -105,11 +116,18 @@
     </style>
   </head>
   <body>
+    <div class="row">
+        <div class="column">&nbsp;</div>
+        <div class="column">
+          <center>
+            <h1>Cool Space Things</h1>
+            <h3>gregdan3@uab.edu</h3>
+            <h3>jmfrees@uab.edu</h3>
+          </center>
+        </div>
+        <div class="column">&nbsp;</div>
+    </div>
     <center>
-    <h1>Cool Space Things</h1>
-    <h3>gregdan3@uab.edu</h3>
-    <h3>jmfrees@uab.edu</h3>
-
     <div id='control_panel' name='control_panel'>
         <input type="range" id="slider" min=1957 max=2021 value=2020 step=1 autocomplete="off" oninput="debounced(1000,change_slider(this.value))" />
         <label for="checkbox">Graphing Apogee</label>
