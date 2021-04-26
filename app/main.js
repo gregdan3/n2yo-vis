@@ -50,6 +50,8 @@ function changeOrbitStat(checked) {
   } else {
     orbitStat = "Apogee";
   }
-  document.querySelector("label[for=checkbox").innerHTML = orbitStat; // look
+  document.querySelector(
+    "label[for=checkbox"
+  ).innerHTML = `Graphing ${orbitStat}`; // look
   render_graph(year, satdata, orbitStat);
 }

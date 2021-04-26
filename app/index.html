@@ -44,13 +44,19 @@
         right:21.5%;
         text-align: center;
         z-index: 100;
+        visibility:hidden;
       }
       label[for=checkbox] {
           position: fixed;
           top: 0.45em;
-          right:18%;
+          right:14%;
+          width:9%;
+          height:1.3em;
           text-align: center;
           z-index: 100;
+          background:#444;
+          border:black;
+          border-radius:10%;
       }
 
       input[type=range],input[type=range]:focus {
@@ -106,7 +112,7 @@
 
     <div id='control_panel' name='control_panel'>
         <input type="range" id="slider" min=1957 max=2021 value=2020 step=1 autocomplete="off" oninput="debounced(1000,change_slider(this.value))" />
-        <label for="checkbox">Apogee</label>
+        <label for="checkbox">Graphing Apogee</label>
         <input type="checkbox" id="checkbox" value=false autocomplete="off" oninput="changeOrbitStat(this.checked)" />
     </div>
     <div class='year-mount'></div>
