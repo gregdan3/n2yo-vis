@@ -523,7 +523,7 @@ function renderMoon(x, y, year, orbitStat) {
     .attr("class", "moon")
     .insert("svg:title")
     .text(
-      "The moon's Apogee is 405000 kilometers.\nIts Perigee is 356400 kilometers."
+      "THE MOON\n\nApogee: 405000 kilometers\nPerigee: 356400 kilometers\nPeriod: 39343 minutes (27.3217 days)\nSynodic period: 42523 minutes (29.53 days)\nSemi major axis: 384400 kilometers\nMass: 7.346 * 10^22 kilograms\nSurface gravity: 1.62 m/s^2\n\nThe synodic period of the Moon is how long the Moon appears to revolve around the Earth, as seen from the Earth's surface.\n\nThe Moon is receding away from the Earth at a rate of 3.8 centimeters per year. One day we'll have to say goodbye, but that day is not soon."
     );
 }
 
