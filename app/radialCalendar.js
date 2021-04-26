@@ -472,7 +472,8 @@ function generateLegend(data) {
   g.append("rect")
     .attr("width", 18 * scale)
     .attr("height", 18 * scale)
-    .attr("stroke", "none")
+    .attr("stroke", "#000")
+    .attr("stroke-width", ".2")
     .attr("fill", (d) => color(d));
   g.append("text")
     .attr("x", 24 * scale)
