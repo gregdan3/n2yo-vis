@@ -136,10 +136,12 @@ function generateXScale(year) {
     .align(0);
 }
 
-function generateYScale(data, orbitStat) {
+function generateYScale(data, year, orbitStat) {
+  let domainmax = year == 1957 ? 10000 : d3.max(data, (d) => d[orbitStat]);
+  // no object from 1957 is still in orbit, otherwise breaks our graph
   return d3
     .scaleRadial()
-    .domain([0, d3.max(data, (d) => d[orbitStat])])
+    .domain([0, domainmax])
     .range([innerRadius, outerRadius]);
 }
 
@@ -463,7 +465,7 @@ function render_graph(year, data, orbitStat) {
   renderYear(year);
   const yearData = data[year];
   let x = generateXScale(year);
-  let y = generateYScale(yearData, orbitStat);
+  let y = generateYScale(yearData, year, orbitStat);
   renderMoon(x, y, year, orbitStat);
   generateLegend(yearData);
   generateXAxis(x, year);
