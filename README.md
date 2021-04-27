@@ -3,8 +3,6 @@ Cool Space Things, or n2yovis, is a visualization of satellite launch dates
 against their apogee/perigee. It encompasses all publically available satellites
 which have a NORAD ID; these number over 47,000 objects since 1957!
 
-## Background
-
 ## Dataset
 n2yo's dataset is public and freely usable, but we couldn't any documentation
 about its distribution rights. However, we prepared a tool to capture the data
@@ -46,6 +44,17 @@ nead to respectively `make reset` or `make remove` then `make start` again.
 
 ### Shutdown Instructions
 In `$PWD`, `make clean`.
+
+## Future Additions
+- When hovering over the legend, highlight all matching satellites on the
+  calendar
+- Have the top bar's slider and graphed stat button live in a fancier top bar
+- Optimize the behavior and rendering of the calendar for faster responsiveness
+- Optimize the dataset to exclude empty keys, saving on initial app load time
+- Correct the formatting on the year text; should have thin black outline but
+  this didn't work for some reason?
+- Use a CSS library for formatting the slider bar so its appearance is more
+  consistent on both Chrome and Firefox
 
 ---
 ###### ETC.
