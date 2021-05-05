@@ -493,7 +493,7 @@ function generateLegend(data) {
 function renderGlobe() {
   d3.select(".globalgroup")
     .append("image")
-    .attr("xlink:href", "http://localhost/static/earth.svg")
+    .attr("xlink:href", "static/earth.svg")
     .attr("viewBox", `0 0 ${innerRadius * 2} ${innerRadius * 2}`)
     .attr("transform", `translate(-${innerRadius}, -${innerRadius})`)
     .attr("width", `${innerRadius * 2}`)
@@ -509,7 +509,7 @@ function renderMoon(x, y, year, orbitStat) {
   };
   d3.select(".globalgroup")
     .append("image")
-    .attr("xlink:href", "http://localhost/static/moon.svg")
+    .attr("xlink:href", "static/moon.svg")
     .attr("viewBox", `0 0 ${innerRadius / 2} ${innerRadius / 2}`)
     .attr(
       "transform",
