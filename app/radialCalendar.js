@@ -543,7 +543,6 @@ const zoom = d3
   .filter((e) => {
     if (e.type === "wheel") {
       // don't allow zooming without pressing [shift] key
-      console.log(`key ${e.shiftKey}`);
       return e.shiftKey;
     }
 
