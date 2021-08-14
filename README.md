@@ -1,7 +1,8 @@
 # Cool Space Things
-Cool Space Things, or n2yovis, is a visualization of satellite launch dates
-against their apogee/perigee. It encompasses all publically available satellites
-which have a NORAD ID; these number over 47,000 objects since 1957!
+[Cool Space Things](https://coolspacethings.neocities.org/), or n2yovis, is a
+visualization of satellite launch dates against their apogee/perigee. It
+encompasses all publically available satellites which have a NORAD ID; these
+number over 47,000 objects since 1957!
 
 ## Dataset
 n2yo's dataset is public and freely usable, but we couldn't any documentation
@@ -16,12 +17,14 @@ place it in `$PWD/app/static/n2yo.json`
 ## How to Use
 ### Prerequisites
 Ensure Docker is available on your system. If you are running a Windows Home
-Edition or other non-professional variant of Windows, good luck.
+Edition or other non-professional variant of Windows, you should look into
+Windows Subsystem for Linux!
 
 ### Setup Instructions
 ##### First Time Setup
 In `$PWD`, `make start`. Then open a browser and navigate to
-<http://localhost.com>.
+<http://localhost/>. Don't forget the dataset: it doesn't come with this
+project!
 
 If the application is already running, or has existing build files, you will
 nead to respectively `make reset` or `make remove` then `make start` again.
@@ -46,18 +49,20 @@ nead to respectively `make reset` or `make remove` then `make start` again.
 In `$PWD`, `make clean`.
 
 ## Future Additions
-- When hovering over the legend, highlight all matching satellites on the
-  calendar
-- Have the top bar's slider and graphed stat button live in a fancier top bar
-- Optimize the behavior and rendering of the calendar for faster responsiveness
-- Optimize the dataset to exclude empty keys, saving on initial app load time
-- Correct the formatting on the year text; should have thin black outline but
-  this didn't work for some reason?
-- Use a CSS library for formatting the slider bar so its appearance is more
-  consistent on both Chrome and Firefox
+- [X] Optimize the dataset to exclude empty keys, saving on app load time
+- [ ] When hovering over legend elements, highlight matching satellites
+- [ ] Make the slider and buttons fancier!
+- [ ] Optimize the behavior and rendering of the calendar for responsiveness
+- [ ] Correct year text appearance; thin black outline is missing?
+- [ ] Use a CSS library for formatting the slider bar so its appearance is more
+      consistent on both Chrome and Firefox
+- [ ] When mousing over satellites, move them apart from one another so they are
+      individually accessible
+- [ ] Add an upload script to make updating the app easier
+- [ ] Reduce the number of Make targets, avoiding redundancy
 
 ---
 ###### ETC.
 authors:
-  - Gregory Danielson (@gregdan3, gregdan3@uab.edu)
+  - Gregory Danielson III (@gregdan3, gregdan3@protonmail.com)
   - Jonathan Frees (@jmfrees, jmfrees@uab.edu)
