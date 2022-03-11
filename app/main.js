@@ -1,4 +1,4 @@
-var year = 2020;
+var year = 2021;
 var satdata = {};
 var orbitStat = "Apogee";
 
